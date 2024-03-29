@@ -1,11 +1,11 @@
-import os
+ 
 from openai import OpenAI
  
 import streamlit as st
 from gdocs import gdocs
  
 
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]  
 model_name = "gpt-4-turbo-preview"
 def send_llm(prompt,data):
     prompting = ""
