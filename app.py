@@ -1,7 +1,6 @@
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
-load_dotenv()
+ 
 import streamlit as st
 from gdocs import gdocs
  
