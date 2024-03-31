@@ -47,8 +47,7 @@ def get_gdoc(url):
     title = gdocs.read_gdoc_title(creds,document_id)
     return document_id,title,chunks
 
-def as_clear_field(field):
-    st.session_state[field] = ""
+ 
  
 with st.sidebar:
   doc_url = st.text_input("Enter your Gooogle Docs url:")
@@ -75,7 +74,7 @@ if not "the_last_reply" in st.session_state:
 if not "the_last_prompt" in st.session_state:
     st.session_state.the_last_prompt = ""
         
-your_prompt = st.text_area("Enter your Prompt:",key="text_prompt")  
+your_prompt = st.text_area("Enter your Prompt:" )  
 submit_llm = st.button("Send")
 if submit_llm:
     data = []
@@ -85,4 +84,4 @@ if submit_llm:
     response = send_llm(your_prompt,data)
     st.session_state.the_last_reply = response.content
     st.write(response.content)
-    as_clear_field("text_prompt") 
+     
