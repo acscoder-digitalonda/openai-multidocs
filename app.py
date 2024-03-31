@@ -76,8 +76,8 @@ if not "the_last_prompt" in st.session_state:
         
 #your_prompt = st.text_area("Enter your Prompt:" ) 
 your_prompt = st.chat_input ("Enter your Prompt:" ) 
-submit_llm = st.button("Send")
-if submit_llm:
+#submit_llm = st.button("Send")
+if your_prompt:
     data = []
     for doc in doc_options:
         data.append(all_docs[doc])
