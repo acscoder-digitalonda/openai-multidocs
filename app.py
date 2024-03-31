@@ -8,6 +8,9 @@ from gdocs import gdocs
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]  
 model_name = "gpt-4-turbo-preview"
 def send_llm(prompt,data):
+    last_prompt = st.session_state.the_last_prompt
+    last_reply = st.session_state.the_last_reply
+    
     system_prompting = "You are a helpful assistant."
     if len(data):
         system_prompting += "Based on these "+str(len(data))+" documents provided below, please complete the task requested by the user:" 
@@ -24,11 +27,15 @@ def send_llm(prompt,data):
     client = OpenAI(
         api_key=OPENAI_API_KEY,
     )
+    our_sms = []
+    our_sms.append({"role": "system", "content": system_prompting })
+    if last_prompt != "":
+        our_sms.append( {"role": "user", "content": last_prompt})
+    if last_reply != "":
+        our_sms.append( {"role": "assistant", "content": last_reply})
+    our_sms.append( {"role": "user", "content": prompt})
     chat_completion = client.chat.completions.create(
-        messages=[
-            {"role": "system", "content": system_prompting },
-            {"role": "user", "content": prompt},
-        ],
+        messages=our_sms,
         model=model_name,
     )
     return chat_completion.choices[0].message
@@ -61,13 +68,19 @@ with st.sidebar:
     all_docs.keys(),
     format_func = lambda x: all_docs[x][0] if x in all_docs else x,
     )
-     
+if not "the_last_reply" in st.session_state:
+    st.session_state.the_last_reply = ""
+if not "the_last_prompt" in st.session_state:
+    st.session_state.the_last_prompt = ""
+        
 your_prompt = st.text_area("Enter your Prompt:")  
 submit_llm = st.button("Send")
 if submit_llm:
     data = []
     for doc in doc_options:
         data.append(all_docs[doc])
-    
+    st.session_state.the_last_prompt = your_prompt
     response = send_llm(your_prompt,data)
+    st.session_state.the_last_reply = response.content
     st.write(response.content)
+    your_prompt = ""
