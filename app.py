@@ -8,28 +8,26 @@ from gdocs import gdocs
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]  
 model_name = "gpt-4-turbo-preview"
 def send_llm(prompt,data):
-    prompting = ""
+    system_prompting = "You are a helpful assistant."
     if len(data):
-        prompting += "Based on these documents provided below, please complete the task requested by the user:" 
-    
+        system_prompting += "Based on these "+str(len(data))+" documents provided below, please complete the task requested by the user:" 
+        c = 0
         for title,chunk in data:
-            prompting += "\n\n"
-            prompting += "Document title :"+title
-            prompting += "\n\n"
-            prompting += "\n\n".join(chunk)
-            prompting += "--------------------------------------------------"
-            prompting += "\n\n"
- 
-    prompting += "USER task:"
-    prompting += prompt
-     
+            c += 1
+            system_prompting += "\n\n"
+            system_prompting += "Document #"+str(c)+" :"+title
+            system_prompting += "\n\n"
+            system_prompting += "\n\n".join(chunk)
+            system_prompting += "--------------------------------------------------"
+            system_prompting += "\n\n"
+  
     client = OpenAI(
         api_key=OPENAI_API_KEY,
     )
     chat_completion = client.chat.completions.create(
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompting},
+            {"role": "system", "content": system_prompting },
+            {"role": "user", "content": prompt},
         ],
         model=model_name,
     )
