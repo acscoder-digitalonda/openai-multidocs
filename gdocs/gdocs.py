@@ -1,7 +1,7 @@
 from __future__ import print_function
 from pathlib import Path
 import os.path
-
+import streamlit as st
 import textwrap
 import re
 
@@ -137,16 +137,22 @@ def gdoc_creds():
     # created automatically when the authorization flow completes for the first
     # time.
     token_path = os.path.dirname(__file__) + '/token.json'
-    credentials_path = os.path.dirname(__file__) + '/credentials.json'
-
+    #credentials_path = os.path.dirname(__file__) + '/credentials.json'
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    else:
+        token_data = {"token": st.secrets["GDOCS_TOKEN"], "refresh_token": st.secrets["GDOCS_REFRESH_TOKEN"], "token_uri": "https://oauth2.googleapis.com/token", "client_id": st.secrets["GDOCS_CLIENT_ID"], "client_secret":st.secrets["GDOCS_CLIENT_SECRET"], "scopes": ["https://www.googleapis.com/auth/drive"], "expiry": "2023-04-02T16:06:31.648931Z"}
+        creds = Credentials.from_authorized_user_info( token_data, SCOPES)
+        
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+            #flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+            credentials_config = {"installed":{"client_id":st.secrets["GDOCS_CLIENT_ID"],"project_id":st.secrets["GDOCS_PROJECT_ID"],"auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":st.secrets["GDOCS_CLIENT_SECRET"],"redirect_uris":["http://localhost"]}}
+            
+            flow = InstalledAppFlow.from_client_config(credentials_config,SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open(token_path, 'w') as token:
