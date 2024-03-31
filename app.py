@@ -74,7 +74,8 @@ if not "the_last_reply" in st.session_state:
 if not "the_last_prompt" in st.session_state:
     st.session_state.the_last_prompt = ""
         
-your_prompt = st.text_area("Enter your Prompt:" )  
+#your_prompt = st.text_area("Enter your Prompt:" ) 
+your_prompt = st.chat_input ("Enter your Prompt:" ) 
 submit_llm = st.button("Send")
 if submit_llm:
     data = []
